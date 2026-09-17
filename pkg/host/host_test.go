@@ -934,6 +934,16 @@ vhost_net 32768 1 tun, Live 0xffffffffa0456000`),
 
 				Expect(h.HasCxiDevice("0000:21:00.1")).To(BeTrue())
 			})
+
+			It("should return false when multiple cxi entries are present", func() {
+				fs.Dirs = []string{
+					"sys/bus/pci/devices/0000:21:00.1/cxi/cxi4",
+					"sys/bus/pci/devices/0000:21:00.1/cxi/cxi5",
+				}
+				tearDown = fs.Use()
+
+				Expect(h.HasCxiDevice("0000:21:00.1")).To(BeFalse())
+			})
 		})
 
 		Context("GetCxiDeviceFile", func() {
