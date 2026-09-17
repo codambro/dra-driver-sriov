@@ -491,7 +491,9 @@ func (s *Manager) handleRDMADevice(ctx context.Context, deviceInfo resourceapi.D
 	return deviceNodes, envs, nil
 }
 
-// handleCxiDevice returns the Cassini (CXI) character device node and environment variables for a device
+// handleCxiDevice returns the CDI device node and environment variables for the Cassini (CXI)
+// char device of a VF. It returns nil device nodes and environment variables when the device
+// is not CXI capable, and an error when the char device cannot be resolved.
 func (s *Manager) handleCxiDevice(ctx context.Context, deviceInfo resourceapi.Device, pciAddress, deviceName string) ([]*cdispec.DeviceNode, []string, error) {
 	logger := klog.FromContext(ctx).WithName("handleCxiDevice")
 

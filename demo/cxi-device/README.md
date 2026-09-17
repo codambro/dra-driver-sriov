@@ -22,8 +22,9 @@ RDMA traffic fails. The driver mounts it automatically, the same way it mounts
    spec as a character device, and sets
    `SRIOVNETWORK_<DEVICE>_CXI_DEVICE=/dev/cxi4` in the container environment.
 
-No opaque config is required — the mount is driven entirely by the discovered
-attribute.
+No CXI-specific opaque config is required — the mount is driven entirely by the
+discovered attribute. The standard `VfConfig` opaque config is still used, since
+`ifName` and `netAttachDefName` are what attach the SR-IOV network interface.
 
 ## Components
 

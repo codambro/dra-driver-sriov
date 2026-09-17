@@ -912,7 +912,8 @@ func (h *Host) GetRDMACharDevices(rdmaDeviceName string) ([]string, error) {
 
 // CXI (Slingshot Cassini) Device Functions
 
-// HasCxiDevice reports whether a PCI device has an associated Cassini (CXI) char device
+// HasCxiDevice reports whether the PCI device at pciAddr has an associated Cassini (CXI)
+// char device. It returns false when the sysfs cxi directory is missing, unreadable or empty.
 func (h *Host) HasCxiDevice(pciAddr string) bool {
 	entries, err := os.ReadDir(buildSysBusPciPath(pciAddr, consts.SysBusPciCxiDir))
 	if err != nil {
@@ -921,7 +922,9 @@ func (h *Host) HasCxiDevice(pciAddr string) bool {
 	return len(entries) > 0
 }
 
-// GetCxiDeviceFile returns the Cassini (CXI) char device file (e.g. /dev/cxi4) for a PCI address
+// GetCxiDeviceFile returns the Cassini (CXI) char device file (e.g. /dev/cxi4) for the PCI
+// device at pciAddr. It returns an error when the sysfs cxi directory is unreadable, empty,
+// or holds more than one entry.
 func (h *Host) GetCxiDeviceFile(pciAddr string) (string, error) {
 	cxiDir := buildSysBusPciPath(pciAddr, consts.SysBusPciCxiDir)
 
