@@ -1538,6 +1538,7 @@ var _ = Describe("Manager", Serial, func() {
 				},
 			}
 
+			mockHost.EXPECT().HasCxiDevice(pciAddress).Return(true)
 			mockHost.EXPECT().GetCxiDeviceFile(pciAddress).Return("/dev/cxi4", nil)
 
 			deviceNodes, envs, err := manager.handleCxiDevice(context.Background(), deviceInfo, pciAddress, deviceName)
@@ -1572,6 +1573,22 @@ var _ = Describe("Manager", Serial, func() {
 			Expect(envs).To(BeEmpty())
 		})
 
+		It("should skip when the char device is gone after binding to a userspace driver", func() {
+			deviceInfo := resourceapi.Device{
+				Attributes: map[resourceapi.QualifiedName]resourceapi.DeviceAttribute{
+					consts.AttributeCxiCapable: {BoolValue: ptr.To(true)},
+				},
+			}
+
+			mockHost.EXPECT().HasCxiDevice(pciAddress).Return(false)
+
+			deviceNodes, envs, err := manager.handleCxiDevice(context.Background(), deviceInfo, pciAddress, deviceName)
+
+			Expect(err).ToNot(HaveOccurred())
+			Expect(deviceNodes).To(BeEmpty())
+			Expect(envs).To(BeEmpty())
+		})
+
 		It("should return error when GetCxiDeviceFile fails", func() {
 			deviceInfo := resourceapi.Device{
 				Attributes: map[resourceapi.QualifiedName]resourceapi.DeviceAttribute{
@@ -1579,6 +1596,7 @@ var _ = Describe("Manager", Serial, func() {
 				},
 			}
 
+			mockHost.EXPECT().HasCxiDevice(pciAddress).Return(true)
 			mockHost.EXPECT().GetCxiDeviceFile(pciAddress).Return("", fmt.Errorf("no cxi device found"))
 
 			deviceNodes, envs, err := manager.handleCxiDevice(context.Background(), deviceInfo, pciAddress, deviceName)

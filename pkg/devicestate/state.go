@@ -501,6 +501,12 @@ func (s *Manager) handleCxiDevice(ctx context.Context, deviceInfo resourceapi.De
 		return nil, nil, nil
 	}
 
+	// The attribute is from discovery; the char device is gone if the VF was since bound to a userspace driver.
+	if !host.GetHelpers().HasCxiDevice(pciAddress) {
+		logger.V(2).Info("No CXI device found for PCI address (device may be bound to vfio-pci)", "device", pciAddress)
+		return nil, nil, nil
+	}
+
 	cxiDevice, err := host.GetHelpers().GetCxiDeviceFile(pciAddress)
 	if err != nil {
 		logger.Error(err, "Failed to get CXI character device", "device", pciAddress)
